@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: things
+  name: things
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: things
+  template:
+    metadata:
+      labels:
+        app: things
+    spec:
+      containers:
+        - image: ghcr.io/mtsmfm/devfiles/ruby:3.0-node-16
+          imagePullPolicy: Always
+          name: node
+          volumeMounts:
+            - mountPath: /workspace
+              subPath: workspace
+              name: workspace
+            - mountPath: /home/user/.vscode-server/extensions
+              subPath: extensions
+              name: workspace
+      securityContext:
+        runAsUser: 1000
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: workspace
