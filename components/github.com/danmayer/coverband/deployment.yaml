@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: coverband
+  name: coverband
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coverband
+  template:
+    metadata:
+      labels:
+        app: coverband
+    spec:
+      containers:
+        - image: ghcr.io/mtsmfm/devfiles/ruby:3.0-node-16
+          imagePullPolicy: Always
+          name: ruby
+          volumeMounts:
+            - mountPath: /workspace
+              subPath: workspace
+              name: workspace
+            - mountPath: /home/user/.vscode-server/extensions
+              subPath: extensions
+              name: workspace
+          securityContext:
+            runAsUser: 1000
+        - image: redis
+          name: redis
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: workspace
