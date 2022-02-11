@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keyboards
+  name: keyboards
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keyboards
+  template:
+    metadata:
+      labels:
+        app: keyboards
+    spec:
+      containers:
+        - image: ghcr.io/mtsmfm/devfiles/qmk
+          imagePullPolicy: Always
+          name: node
+          volumeMounts:
+            - mountPath: /workspace
+              subPath: workspace
+              name: workspace
+            - mountPath: /home/user/.vscode-server/extensions
+              subPath: extensions
+              name: workspace
+          env:
+            - name: QMK_HOME
+              value: /workspace/qmk_firmware
+      securityContext:
+        runAsUser: 1000
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: workspace
